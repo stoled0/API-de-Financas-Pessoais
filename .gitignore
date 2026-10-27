@@ -1,0 +1,51 @@
+# ============================================================
+# .gitignore — arquivos que NUNCA devem ir para o repositório
+# ============================================================
+
+# --- Python: arquivos gerados automaticamente ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# --- Ambientes virtuais (cada um cria o seu) ---
+.venv/
+venv/
+env/
+
+# --- Segredos e configurações locais (LGPD / segurança) ---
+.env
+.env.*
+*.pem
+*.key
+
+# --- Relatórios de testes e ferramentas ---
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.ruff_cache/
+.scannerwork/
+
+# --- Banco de dados local (cada um gera o seu) ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- DADOS REAIS: planilhas e exportações ---
+# A planilha original tem dados pessoais e financeiros: nunca versionar.
+*.xlsx
+*.xls
+*.csv
+dados/
+# Exceção: arquivos de teste ANONIMIZADOS ficam em tests/fixtures/
+!tests/fixtures/*.xlsx
+!tests/fixtures/*.csv
+
+# --- Editores e sistema operacional ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
