@@ -27,6 +27,15 @@ O sistema guarda as regras no código, testadas e protegidas: o usuário informa
 - Alertas de orçamento por categoria e de saldo previsto negativo
 - Importação da planilha antiga (formato simplificado)
 
+## Regras principais
+
+- **Parcelas:** a soma é sempre igual ao total; a diferença de centavos fica na 1ª parcela.
+- **Cartão de crédito:** fechamento e vencimento configuráveis por cartão (padrão: fecha dia 3, vence dia 10). Compra até o dia de fechamento entra na fatura do mês; depois, na do mês seguinte.
+- **Débito, Pix e dinheiro:** entram no mês do pagamento. **Boleto:** no mês do vencimento.
+- **Receitas:** entram no mês em que o dinheiro entra.
+- **Fixos:** contínuos ou por um número de meses (ex.: academia, streaming).
+- **Divisão entre pessoas:** uma compra pode ser dividida entre várias pessoas (igual, por percentual ou por valor exato), com relatório de quanto cada uma deve.
+
 ## Tecnologias
 
 | Uso | Ferramenta |
