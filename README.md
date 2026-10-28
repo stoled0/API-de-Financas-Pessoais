@@ -1,6 +1,6 @@
 # Controle Financeiro Compartilhado
 
-Sistema de controle financeiro pessoal e compartilhado, com foco em **compras parceladas no cartão de crédito**, **faturas por cartão** e **divisão de gastos entre pessoas**.
+Sistema de controle financeiro pessoal: registra receitas e despesas em diferentes formas de pagamento (crédito, débito, boleto), inclusive parceladas e recorrentes, e apresenta resumos mensais e anuais comparando o previsto com o realizado.
 
 Trabalho Final da disciplina de Engenharia de Software — IFMG, Campus Ribeirão das Neves.
 Sistema nº 12 da lista do professor: *API de Finanças Pessoais*.
@@ -19,11 +19,12 @@ O sistema guarda as regras no código, testadas e protegidas: o usuário informa
 
 ## Funcionalidades do MVP
 
-- Registro de compras à vista, parceladas e recorrentes
-- Cálculo automático de parcelas e da fatura em que cada uma cai
-- Divisão de gastos entre pessoas (rateio)
-- Resumo mensal: recebido × gasto × saldo
-- Alertas de orçamento por categoria
+- Registro de receitas e despesas, com forma de pagamento e categoria
+- Compras parceladas no crédito, alocadas na fatura correta
+- Receitas e despesas fixas (academia, streaming, salário), geradas todo mês
+- Previsto × realizado: marcar lançamentos como pagos ou recebidos
+- Resumo mensal e anual: receitas − despesas = saldo previsto e realizado
+- Alertas de orçamento por categoria e de saldo previsto negativo
 - Importação da planilha antiga (formato simplificado)
 
 ## Tecnologias
