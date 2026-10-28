@@ -9,6 +9,7 @@ Exigência da seção 5 do enunciado. Registre aqui cada uso relevante de ferram
 | Data | Integrante | Ferramenta e versão | O que foi pedido | Resultado: aceito, corrigido ou rejeitado (e por quê) |
 | --- | --- | --- | --- | --- |
 | 26/10/2026 | | Claude Opus 5.5 | Análise do enunciado e da planilha; proposta de sistema, arquitetura e cronograma | |
+| 28/10/2026 | Sarah | GitHub Copilot | Mensagem e descrição de commit do README (2 commits) | Rejeitado no 1º commit (sugestão em inglês, fora do padrão; substituída por mensagem própria). Aceito no 2º, após conferência |
 
 ## Casos em que a IA errou (mínimo de 3)
 
