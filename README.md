@@ -14,6 +14,7 @@ O sistema nasceu de uma planilha real de controle financeiro, que ficou complexa
 - corrigir um lançamento exige apagar células soltas;
 - muitas abas e informações, o que dificulta a análise;
 - quem tem pouco tempo ou pouca familiaridade com planilhas desiste de usar.
+- não é possível dividir uma compra entre mais de duas pessoas.
 
 O sistema guarda as regras no código, testadas e protegidas: o usuário informa só o essencial e o resto é calculado.
 
