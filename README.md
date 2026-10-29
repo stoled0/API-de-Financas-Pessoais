@@ -90,7 +90,7 @@ O passo a passo e o padrão de mensagens de commit estão em [CONTRIBUTING.md](C
 
 | Integrante | Funcionalidade | Papel transversal |
 | --- | --- | --- |
-| *(cada integrante adiciona sua linha no primeiro pull request)* | | |
+| Sarah | a definir | a definir |
 
 ## Proteção de dados
 
