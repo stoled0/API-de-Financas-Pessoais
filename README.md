@@ -1,6 +1,6 @@
 # Controle Financeiro Compartilhado
 
-Sistema de controle financeiro pessoal e compartilhado, com foco em **compras parceladas no cartão de crédito**, **faturas por cartão** e **divisão de gastos entre pessoas**.
+Sistema de controle financeiro pessoal: registra receitas e despesas em diferentes formas de pagamento (crédito, débito, boleto), inclusive parceladas e recorrentes, e apresenta resumos mensais e anuais comparando o previsto com o realizado.
 
 Trabalho Final da disciplina de Engenharia de Software — IFMG, Campus Ribeirão das Neves.
 Sistema nº 12 da lista do professor: *API de Finanças Pessoais*.
@@ -14,17 +14,28 @@ O sistema nasceu de uma planilha real de controle financeiro, que ficou complexa
 - corrigir um lançamento exige apagar células soltas;
 - muitas abas e informações, o que dificulta a análise;
 - quem tem pouco tempo ou pouca familiaridade com planilhas desiste de usar.
+- não é possível dividir uma compra entre mais de duas pessoas.
 
 O sistema guarda as regras no código, testadas e protegidas: o usuário informa só o essencial e o resto é calculado.
 
 ## Funcionalidades do MVP
 
-- Registro de compras à vista, parceladas e recorrentes
-- Cálculo automático de parcelas e da fatura em que cada uma cai
-- Divisão de gastos entre pessoas (rateio)
-- Resumo mensal: recebido × gasto × saldo
-- Alertas de orçamento por categoria
+- Registro de receitas e despesas, com forma de pagamento e categoria
+- Compras parceladas no crédito, alocadas na fatura correta
+- Receitas e despesas fixas (academia, streaming, salário), geradas todo mês
+- Previsto × realizado: marcar lançamentos como pagos ou recebidos
+- Resumo mensal e anual: receitas − despesas = saldo previsto e realizado
+- Alertas de orçamento por categoria e de saldo previsto negativo
 - Importação da planilha antiga (formato simplificado)
+
+## Regras principais
+
+- **Parcelas:** a soma é sempre igual ao total; a diferença de centavos fica na 1ª parcela.
+- **Cartão de crédito:** fechamento e vencimento configuráveis por cartão (padrão: fecha dia 3, vence dia 10). Compra até o dia de fechamento entra na fatura do mês; depois, na do mês seguinte.
+- **Débito, Pix e dinheiro:** entram no mês do pagamento. **Boleto:** no mês do vencimento.
+- **Receitas:** entram no mês em que o dinheiro entra.
+- **Fixos:** contínuos ou por um número de meses (ex.: academia, streaming).
+- **Divisão entre pessoas:** uma compra pode ser dividida entre várias pessoas (igual, por percentual ou por valor exato), com relatório de quanto cada uma deve.
 
 ## Tecnologias
 
