@@ -91,6 +91,7 @@ O passo a passo e o padrão de mensagens de commit estão em [CONTRIBUTING.md](C
 | Integrante | Funcionalidade | Papel transversal |
 | --- | --- | --- |
 | Sarah | a definir | a definir |
+| Sarah | Thalita | a definir |
 
 ## Proteção de dados
 
