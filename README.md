@@ -92,6 +92,7 @@ O passo a passo e o padrão de mensagens de commit estão em [CONTRIBUTING.md](C
 | --- | --- | --- |
 | Sarah | a definir | a definir |
 | Thalita | a definir | a definir |
+| Pedro | a definir | a definir |
 
 ## Proteção de dados
 
