@@ -1,20 +1,16 @@
-# Importa a função que abre a conexão com o SQLite.
+from decimal import Decimal
 from src.persistencia.BD import conectar_banco
 
-# Responsável por salvar compras e suas parcelas.
 class RepositorioCompras:
-    # Recebe uma compra validada e suas parcelas calculadas.
+    # Salva uma compra e todas as suas parcelas.
     def salvar(self, compra, parcelas):
-        # Abre uma conexão com o banco de dados.
         conexao = conectar_banco()
-
         try:
-            # PASSO 1: Converter o valor total para centavos.
+            # O banco guarda valores monetários em centavos.
             valor_total_centavos = int(
                 compra.valor_total * 100
             )
-
-            # PASSO 2: Salvar os dados gerais da compra.
+            # Primeiro, salva a compra.
             cursor = conexao.execute(
                 """
                 INSERT INTO compras (
@@ -36,17 +32,14 @@ class RepositorioCompras:
                     compra.quantidade_parcelas
                 )
             )
-
-            # Recupera o identificador da compra criada.
+            # Recupera o ID criado pelo SQLite.
             compra_id = cursor.lastrowid
 
-            # PASSO 3: Salvar cada parcela da compra.
+            # Salva cada parcela vinculada à compra.
             for parcela in parcelas:
-                # Converte o valor da parcela para centavos.
                 valor_centavos = int(
                     parcela["valor"] * 100
                 )
-
                 conexao.execute(
                     """
                     INSERT INTO parcelas (
@@ -65,22 +58,77 @@ class RepositorioCompras:
                     )
                 )
 
-            # PASSO 4: Confirmar todas as operações.
-            # O commit só acontece depois que a compra e todas as parcelas foram salvas.
+            # Confirma a compra e todas as parcelas juntas.
             conexao.commit()
-
-            # Devolve o ID da compra cadastrada.
             return compra_id
-
         except Exception:
-            # Se alguma operação falhar, desfaz
-            # todas as alterações desta transação.
+            # Se alguma parcela falhar, desfaz tudo.
             conexao.rollback()
-
-            # Repassa o erro para a camada responsável
-            # por tratá-lo.
             raise
-
         finally:
-            # Fecha a conexão, com sucesso ou erro.
+            conexao.close()
+
+    # Lista as compras com o nome do cartão.
+    def listar(self):
+        conexao = conectar_banco()
+        try:
+            registros = conexao.execute(
+                """
+                SELECT
+                    compras.id,
+                    cartoes.nome AS nome_cartao,
+                    compras.descricao,
+                    compras.identificacao_fatura,
+                    compras.valor_total_centavos,
+                    compras.data_compra,
+                    compras.quantidade_parcelas
+                FROM compras
+                INNER JOIN cartoes
+                    ON cartoes.id = compras.cartao_id
+                ORDER BY compras.data_compra DESC,
+                         compras.id DESC
+                """
+            ).fetchall()
+            resultado = []
+
+            for registro in registros:
+
+                compra = dict(registro)
+
+                # Recupera as parcelas desta compra.
+                parcelas = conexao.execute(
+                    """
+                    SELECT
+                        numero,
+                        valor_centavos,
+                        vencimento
+                    FROM parcelas
+                    WHERE compra_id = ?
+                    ORDER BY numero
+                    """,
+                    (compra["id"],)
+                ).fetchall()
+
+                # Converte centavos para valores em reais.
+                compra["valor_total"] = str(
+                    Decimal(
+                        compra.pop("valor_total_centavos")
+                    ) / 100
+                )
+
+                compra["parcelas"] = [
+                    {
+                        "numero": parcela["numero"],
+                        "valor": str(
+                            Decimal(
+                                parcela["valor_centavos"]
+                            ) / 100
+                        ),
+                        "vencimento": parcela["vencimento"]
+                    }
+                    for parcela in parcelas
+                ]
+                resultado.append(compra)
+            return resultado
+        finally:
             conexao.close()
