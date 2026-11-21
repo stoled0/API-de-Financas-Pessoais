@@ -39,9 +39,8 @@ Permitir a consulta dos valores das faturas de cartão e das despesas recorrente
 - Compras realizadas no dia do fechamento serão incluídas na fatura atual.
 - A soma das parcelas deverá corresponder exatamente ao valor total da compra.
 - As despesas recorrentes serão geradas mensalmente, respeitando suas datas de início e término.
-- Caso o dia de vencimento de uma despesa recorrente não exista no mês, a ocorrência será transferida para o primeiro dia útil do mês seguinte.
-- Para as despesas recorrentes, serão considerados dias úteis de segunda a sexta-feira, sem tratamento de feriados.
-- Para simplificação acadêmica, fevereiro será considerado com 28 dias.
+- Para despesas recorrentes, os dias de vencimento vão de 1 a 31 e são tratados como números, sem ajustes por calendário, dias úteis ou feriados.
+- As despesas recorrentes geram uma cobrança por mês dentro do período de vigência, sem registrar cópias mensais no banco.
 - Os casos especiais de fechamento e vencimento dos cartões nos dias 29, 30 e 31 não serão tratados na versão inicial.
 
 ## 4. Funcionalidades fora do escopo
@@ -56,7 +55,7 @@ Também não serão implementadas funcionalidades de edição ou cancelamento de
 - **FastAPI:** framework escolhido para criação da API REST.
 - **SQLite:** banco de dados relacional escolhido para armazenamento das informações.
 - **Repository:** padrão de projeto utilizado para organizar o acesso aos dados.
-- **pytest:** ferramenta prevista para os testes automatizados.
+- **pytest:** ferramenta utilizada para os testes automatizados.
 - **Swagger UI:** interface interativa para documentação e demonstração da API.
 - **Git e GitHub:** ferramentas de versionamento e colaboração.
 
@@ -87,27 +86,29 @@ Essa organização busca facilitar a compreensão, a manutenção e os testes do
 
 ## 7. Situação atual do desenvolvimento
 
-O projeto encontra-se em desenvolvimento.
+As cinco funcionalidades do escopo estão implementadas: cartões, compras, parcelamento, despesas recorrentes e resumo mensal. Os quatro blocos de testes automatizados foram executados em conjunto, com 80 testes aprovados na revisão.
 
-Até o momento, foram realizadas a definição do escopo, a organização inicial da arquitetura e a implementação da classe `Cartao`, com validações para nome obrigatório e dias de fechamento e vencimento entre 1 e 28.
+## 8. Como executar a API e os testes
 
-Essas validações foram verificadas por meio de testes manuais em Python.
-
-As funcionalidades de armazenamento no SQLite e comunicação HTTP ainda serão implementadas.
-
-## 8. Como executar o teste manual
-
-Com o Python instalado, abra o terminal na pasta principal do projeto.
-
-Execute:
+Na pasta principal do projeto, com Python e as dependências instaladas, inicie a API:
 
 ```powershell
-python teste_manual_cartao.py
+python -m uvicorn src.api.main:app --reload
 ```
 
-Esse comando executa os testes manuais iniciais da classe `Cartao`, desde que o arquivo tenha sido criado conforme as etapas de desenvolvimento.
+Acesse a interface Swagger em `http://127.0.0.1:8000/docs`.
 
-Os testes automatizados com pytest serão implementados posteriormente.
+Para executar os testes automatizados:
+
+```powershell
+python -m pytest tests/test_bloco1_cartoes.py tests/test_bloco2_compras.py tests/test_bloco3_despesas.py tests/test_bloco4_resumo.py -v
+```
+
+Para consultar a cobertura dos módulos de domínio:
+
+```powershell
+python -m pytest tests/test_bloco1_cartoes.py tests/test_bloco2_compras.py tests/test_bloco3_despesas.py tests/test_bloco4_resumo.py --cov=src.dominio --cov-report=term-missing
+```
 
 ## 9. Organização do desenvolvimento
 

@@ -1,8 +1,4 @@
-# Importa date para representar datas.
 from datetime import date
-
-# Importa monthrange para descobrir quantos dias existem em determinado mês.
-from calendar import monthrange
 
 # Avança uma quantidade de meses a partir de um ano e mês informados.
 def adicionar_meses(ano, mes, quantidade):
@@ -93,13 +89,7 @@ def calcular_datas_parcelas(
             numero
         )
 
-        # Descobre o último dia válido do mês.
-        ultimo_dia = monthrange(ano, mes)[1]
-
-        # Evita gerar uma data inexistente.
-        dia = min(primeiro_vencimento.day, ultimo_dia)
-
-        # Adiciona a data calculada à lista.
-        datas.append(date(ano, mes, dia))
+        # Os vencimentos dos cartões vão de 1 a 28, então esse dia existe em todos os meses.
+        datas.append(date(ano, mes, primeiro_vencimento.day))
 
     return datas

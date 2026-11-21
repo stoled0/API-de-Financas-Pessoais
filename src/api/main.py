@@ -19,6 +19,7 @@ from src.persistencia.BD import criar_tabelas
 from src.aplicacao.servico_cartoes import ServicoCartoes
 from src.aplicacao.servico_compras import ServicoCompras
 from src.aplicacao.servico_despesas import ServicoDespesas
+from src.aplicacao.servico_resumo import ServicoResumo
 
 # ============================================================
 # 1. CONFIGURAÇÃO DA API
@@ -44,6 +45,9 @@ criar_tabelas()
 servico_cartoes = ServicoCartoes()
 servico_compras = ServicoCompras()
 servico_despesas = ServicoDespesas()
+servico_resumo = ServicoResumo(
+    servico_despesas=servico_despesas
+)
 
 # ============================================================
 # 3. MODELOS PYDANTIC
@@ -293,7 +297,6 @@ def cadastrar_despesa(dados: DadosCadastroDespesa):
     tags=["Despesas recorrentes"]
 )
 def listar_despesas():
-
     return servico_despesas.listar_despesas()
 
 # CONSULTAR COBRANÇAS DE UM MÊS
@@ -302,12 +305,28 @@ def listar_despesas():
     tags=["Despesas recorrentes"]
 )
 def consultar_cobrancas(ano: int, mes: int):
-
     try:
         return servico_despesas.consultar_cobrancas(
             ano,
             mes
         )
+    except (ValueError, LookupError) as erro:
+        tratar_erro(erro)
 
+# ============================================================
+# 8. RESUMO FINANCEIRO MENSAL — BLOCO 4
+# ============================================================
+
+@app.get(
+    "/resumo/{ano}/{mes}",
+    tags=["Resumo financeiro"],
+    summary="Consultar resumo financeiro mensal"
+)
+def consultar_resumo(ano: int, mes: int):
+    try:
+        return servico_resumo.consultar_resumo(
+            ano,
+            mes
+        )
     except (ValueError, LookupError) as erro:
         tratar_erro(erro)
