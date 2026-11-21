@@ -74,6 +74,18 @@ def criar_tabelas():
             ON cartoes (LOWER(TRIM(nome)))
         """)
 
+        # Tabela das despesas fixas e recorrentes.
+        conexao.execute("""
+            CREATE TABLE IF NOT EXISTS despesas_recorrentes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                descricao TEXT NOT NULL,
+                valor_mensal_centavos INTEGER NOT NULL,
+                dia_vencimento INTEGER NOT NULL,
+                data_inicio TEXT NOT NULL,
+                data_fim TEXT
+            )
+        """)
+
         # Confirma as alterações realizadas no banco.
         conexao.commit()
     finally:

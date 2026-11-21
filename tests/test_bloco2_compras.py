@@ -207,7 +207,6 @@ def test_valor_invalido(ambiente, valor):
 
     assert resposta.status_code == 400
 
-
 # TESTE 9: Quantidade de parcelas inválida.
 @pytest.mark.parametrize(
     "quantidade",
@@ -244,7 +243,6 @@ def test_compra_a_vista_no_credito(ambiente):
     assert Decimal(
         parcelas[0]["valor"]
     ) == Decimal("75.90")
-
 
 # TESTE 11: O banco deve guardar compra e parcelas.
 def test_persistencia_sqlite(ambiente):
@@ -285,7 +283,6 @@ def test_persistencia_sqlite(ambiente):
         ) == 10000
     finally:
         conexao.close()
-
 
 # TESTE 12: Uma compra inválida não pode ser salva.
 def test_compra_invalida_nao_persiste(ambiente):
