@@ -49,3 +49,17 @@ dados/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Banco de dados local
+financas.db
+
+# Arquivos temporários do Python
+__pycache__/
+*.pyc
+
+# Ambientes virtuais
+.venv/
+venv/
+
+# Arquivos de configuração local
+.env

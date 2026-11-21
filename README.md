@@ -1,102 +1,122 @@
-# Controle Financeiro Compartilhado
+# API de Finanças Pessoais
 
-Sistema de controle financeiro pessoal: registra receitas e despesas em diferentes formas de pagamento (crédito, débito, boleto), inclusive parceladas e recorrentes, e apresenta resumos mensais e anuais comparando o previsto com o realizado.
+Trabalho acadêmico desenvolvido na disciplina de Engenharia de Software do Instituto Federal de Minas Gerais (IFMG) — Campus Ribeirão das Neves.
 
-Trabalho Final da disciplina de Engenharia de Software — IFMG, Campus Ribeirão das Neves.
-Sistema nº 12 da lista do professor: *API de Finanças Pessoais*.
+## 1. Objetivo do projeto
 
-## O problema
+Desenvolver uma API REST para auxiliar na organização de compras realizadas com cartões de crédito e despesas mensais recorrentes.
 
-O sistema nasceu de uma planilha real de controle financeiro, que ficou complexa demais para usar no dia a dia:
+O sistema permitirá cadastrar cartões, registrar compras parceladas, organizar automaticamente as parcelas nas respectivas faturas e consultar resumos financeiros mensais. A proposta é automatizar cálculos e organizar informações financeiras, reduzindo a necessidade de realizar esses controles manualmente.
 
-- difícil de preencher pelo celular;
-- fórmulas importantes podem ser apagadas por engano;
-- corrigir um lançamento exige apagar células soltas;
-- muitas abas e informações, o que dificulta a análise;
-- quem tem pouco tempo ou pouca familiaridade com planilhas desiste de usar.
-- não é possível dividir uma compra entre mais de duas pessoas.
+## 2. Funcionalidades previstas
 
-O sistema guarda as regras no código, testadas e protegidas: o usuário informa só o essencial e o resto é calculado.
+O sistema será composto por cinco funcionalidades principais.
 
-## Funcionalidades do MVP
+**PB-01 — Cadastro de cartões de crédito**
 
-- Registro de receitas e despesas, com forma de pagamento e categoria
-- Compras parceladas no crédito, alocadas na fatura correta
-- Receitas e despesas fixas (academia, streaming, salário), geradas todo mês
-- Previsto × realizado: marcar lançamentos como pagos ou recebidos
-- Resumo mensal e anual: receitas − despesas = saldo previsto e realizado
-- Alertas de orçamento por categoria e de saldo previsto negativo
-- Importação da planilha antiga (formato simplificado)
+Permitir o cadastro e a consulta de cartões, contendo nome, dia de fechamento e dia de vencimento.
 
-## Regras principais
+**PB-02 — Registro de compras**
 
-- **Parcelas:** a soma é sempre igual ao total; a diferença de centavos fica na 1ª parcela.
-- **Cartão de crédito:** fechamento e vencimento configuráveis por cartão (padrão: fecha dia 3, vence dia 10). Compra até o dia de fechamento entra na fatura do mês; depois, na do mês seguinte.
-- **Débito, Pix e dinheiro:** entram no mês do pagamento. **Boleto:** no mês do vencimento.
-- **Receitas:** entram no mês em que o dinheiro entra.
-- **Fixos:** contínuos ou por um número de meses (ex.: academia, streaming).
-- **Divisão entre pessoas:** uma compra pode ser dividida entre várias pessoas (igual, por percentual ou por valor exato), com relatório de quanto cada uma deve.
+Permitir o registro de compras realizadas no cartão de crédito, contendo descrição, valor total, data da compra, cartão utilizado e quantidade de parcelas de 1 a 48. A identificação apresentada na fatura será opcional.
 
-## Tecnologias
+**PB-03 — Parcelamento e organização de faturas**
 
-| Uso | Ferramenta |
-| --- | --- |
-| Linguagem | Python 3.12+ |
-| API web | FastAPI (documentação OpenAPI automática) |
-| Banco de dados | SQLite |
-| Testes e cobertura | pytest + pytest-cov |
-| Análise estática | Ruff (e SonarQube Cloud) |
-| Integração contínua | GitHub Actions |
-| Diagramas | PlantUML (somente UML) |
+Calcular automaticamente o valor das parcelas, distribuir corretamente os centavos e identificar a fatura correspondente a cada parcela, considerando o dia de fechamento do cartão.
 
-## Arquitetura
+**PB-04 — Despesas recorrentes**
 
-Arquitetura **hexagonal simplificada** (portas e adaptadores): as regras de negócio ficam no centro e não dependem de banco, web ou arquivos. Detalhes e justificativa nos ADRs em `docs/adr/`.
+Permitir o cadastro de despesas mensais de valor fixo, contendo descrição, valor, data de início, data de término opcional e dia de vencimento.
 
-```
+**PB-05 — Resumo financeiro mensal**
+
+Permitir a consulta dos valores das faturas de cartão e das despesas recorrentes de determinado mês, apresentando o total financeiro sem duplicar registros.
+
+## 3. Principais regras do sistema
+
+- Cada cartão deverá possuir nome, dia de fechamento e dia de vencimento.
+- As compras deverão estar associadas a um cartão previamente cadastrado.
+- Compras realizadas no dia do fechamento serão incluídas na fatura atual.
+- A soma das parcelas deverá corresponder exatamente ao valor total da compra.
+- As despesas recorrentes serão geradas mensalmente, respeitando suas datas de início e término.
+- Caso o dia de vencimento de uma despesa recorrente não exista no mês, a ocorrência será transferida para o primeiro dia útil do mês seguinte.
+- Para as despesas recorrentes, serão considerados dias úteis de segunda a sexta-feira, sem tratamento de feriados.
+- Para simplificação acadêmica, fevereiro será considerado com 28 dias.
+- Os casos especiais de fechamento e vencimento dos cartões nos dias 29, 30 e 31 não serão tratados na versão inicial.
+
+## 4. Funcionalidades fora do escopo
+
+Não serão desenvolvidas nesta versão funcionalidades relacionadas a Pix, débito, dinheiro, receitas, divisão de compras entre pessoas, importação de planilhas, controle de pagamentos, antecipação de parcelas ou interface gráfica própria.
+
+Também não serão implementadas funcionalidades de edição ou cancelamento de compras já registradas.
+
+## 5. Tecnologias utilizadas ou planejadas
+
+- **Python:** linguagem utilizada no desenvolvimento das funcionalidades.
+- **FastAPI:** framework escolhido para criação da API REST.
+- **SQLite:** banco de dados relacional escolhido para armazenamento das informações.
+- **Repository:** padrão de projeto utilizado para organizar o acesso aos dados.
+- **pytest:** ferramenta prevista para os testes automatizados.
+- **Swagger UI:** interface interativa para documentação e demonstração da API.
+- **Git e GitHub:** ferramentas de versionamento e colaboração.
+
+## 6. Arquitetura do sistema
+
+O projeto utilizará uma arquitetura em camadas, organizada em quatro responsabilidades principais.
+
+```text
 src/
-  dominio/       regras de negócio puras (Lancamento, Parcela, Fatura...)
-  aplicacao/     casos de uso e portas (interfaces)
-  adaptadores/   API, banco SQLite, importador de planilha
-tests/           testes unitários e de integração
-  fixtures/      dados de teste ANONIMIZADOS
+    api/
+    aplicacao/
+    dominio/
+    persistencia/
+
+tests/
 docs/
-  requisitos/    histórias de usuário e requisitos não funcionais
-  casos-de-uso/  descrições dos casos de uso
-  uml/           diagramas (arquivos .puml)
-  adr/           registros de decisões de arquitetura
-  ia/            registro de uso de IA
 ```
 
-## Como executar, testar e analisar
+**API:** responsável por receber requisições HTTP e retornar respostas.
 
-> Será preenchido na Sprint 1, quando o código inicial existir.
+**Aplicação:** responsável por coordenar as operações solicitadas.
 
-## Estratégia de branches (trunk-based)
+**Domínio:** responsável por representar os elementos financeiros e implementar as regras de negócio.
 
-- A branch `main` é a principal e está **protegida**: ninguém envia código direto para ela.
-- Cada tarefa é feita em uma branch curta, criada a partir da `main`:
-  - `feature/...` nova funcionalidade (ex.: `feature/parcelamento`)
-  - `fix/...` correção de erro
-  - `test/...` novos testes
-  - `docs/...` documentação
-- A branch volta para a `main` por **pull request**, com **1 aprovação de outro integrante**.
-- **Ninguém aprova o próprio pull request.**
-- Entregas marcadas com tags: `v0.1.0`, `v0.2.0` (apresentação parcial) e `v1.0.0` (entrega final).
+**Persistência:** responsável pelo armazenamento e recuperação dos dados no SQLite.
 
-O passo a passo e o padrão de mensagens de commit estão em [CONTRIBUTING.md](CONTRIBUTING.md).
+Essa organização busca facilitar a compreensão, a manutenção e os testes do sistema.
 
-## Equipe
+## 7. Situação atual do desenvolvimento
 
-| Integrante | Funcionalidade | Papel transversal |
-| --- | --- | --- |
-| Sarah | a definir | a definir |
-| Thalita | a definir | a definir |
+O projeto encontra-se em desenvolvimento.
 
-## Proteção de dados
+Até o momento, foram realizadas a definição do escopo, a organização inicial da arquitetura e a implementação da classe `Cartao`, com validações para nome obrigatório e dias de fechamento e vencimento entre 1 e 28.
 
-Este repositório **não contém dados reais**. Planilhas e bancos de dados estão bloqueados no `.gitignore`. Os testes usam apenas dados fictícios em `tests/fixtures/`.
+Essas validações foram verificadas por meio de testes manuais em Python.
 
-## Uso de inteligência artificial
+As funcionalidades de armazenamento no SQLite e comunicação HTTP ainda serão implementadas.
 
-O uso de IA neste projeto é declarado, conforme a seção 5 do enunciado. O registro de prompts, ferramentas e revisões fica em [docs/ia/registro-de-prompts.md](docs/ia/registro-de-prompts.md).
+## 8. Como executar o teste manual
+
+Com o Python instalado, abra o terminal na pasta principal do projeto.
+
+Execute:
+
+```powershell
+python teste_manual_cartao.py
+```
+
+Esse comando executa os testes manuais iniciais da classe `Cartao`, desde que o arquivo tenha sido criado conforme as etapas de desenvolvimento.
+
+Os testes automatizados com pytest serão implementados posteriormente.
+
+## 9. Organização do desenvolvimento
+
+O projeto será desenvolvido de maneira incremental, dividido em três Sprints.
+
+- **Sprint 1:** cadastro de cartões de crédito.
+- **Sprint 2:** registro de compras, parcelamento e organização de faturas.
+- **Sprint 3:** despesas recorrentes e resumo financeiro mensal.
+
+As decisões arquiteturais e os requisitos estão documentados no Relatório Técnico do projeto.
+
+Os arquivos da pasta `docs/` serão utilizados como documentação complementar de apoio ao desenvolvimento.
