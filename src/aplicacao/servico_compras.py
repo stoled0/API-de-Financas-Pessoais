@@ -4,27 +4,16 @@ from decimal import Decimal
 from src.dominio.compra import Compra
 from src.dominio.gerador_parcelas import gerar_parcelas
 
-from src.persistencia.repositorio_cartoes import RepositorioCartoes
-from src.persistencia.repositorio_compras import RepositorioCompras
+from src.dominio.contratos_repositorios import ConsultaCartoes, RegistroCompras
 
 class ServicoCompras:
     def __init__(
         self,
-        repositorio_compras=None,
-        repositorio_cartoes=None
+        repositorio_compras: RegistroCompras,
+        repositorio_cartoes: ConsultaCartoes
     ):
-        # Permite utilizar Repositories reais ou falsos
-        # durante os testes automatizados.
-        self.repositorio_compras = (
-            repositorio_compras
-            if repositorio_compras is not None
-            else RepositorioCompras()
-        )
-        self.repositorio_cartoes = (
-            repositorio_cartoes
-            if repositorio_cartoes is not None
-            else RepositorioCartoes()
-        )
+        self.repositorio_compras = repositorio_compras
+        self.repositorio_cartoes = repositorio_cartoes
 
     # Coordena o cadastro completo de uma compra.
     def cadastrar_compra(

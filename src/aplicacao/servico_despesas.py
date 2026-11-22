@@ -1,16 +1,12 @@
 from datetime import date
 from decimal import Decimal
 from src.dominio.despesa_recorrente import DespesaRecorrente
-from src.persistencia.repositorio_despesas import RepositorioDespesas
+from src.dominio.contratos_repositorios import RegistroDespesas
 
 class ServicoDespesas:
-    def __init__(self, repositorio=None):
-        self.repositorio = (
-            repositorio
-            if repositorio is not None
-            else RepositorioDespesas()
-        )
-
+    def __init__(self, repositorio: RegistroDespesas):
+        self.repositorio = repositorio
+        
     # Coordena o cadastro da despesa.
     def cadastrar_despesa(
         self,

@@ -29,6 +29,10 @@ from src.aplicacao.servico_compras import ServicoCompras
 from src.aplicacao.servico_despesas import ServicoDespesas
 from src.aplicacao.servico_resumo import ServicoResumo
 
+from src.persistencia.repositorio_cartoes import RepositorioCartoes
+from src.persistencia.repositorio_compras import RepositorioCompras
+from src.persistencia.repositorio_despesas import RepositorioDespesas
+from src.persistencia.repositorio_resumo import RepositorioResumo
 
 # ============================================================
 # 1. PREPARAÇÃO DO BANCO TEMPORÁRIO
@@ -48,12 +52,22 @@ def ambiente(tmp_path, monkeypatch):
 
     BD.criar_tabelas()
 
-    # Criamos os serviços que já existem no projeto.
-    cartoes = ServicoCartoes()
-    compras = ServicoCompras()
-    despesas = ServicoDespesas()
+    # Criamos os repositórios do banco temporário.
+    repositorio_cartoes = RepositorioCartoes()
+    repositorio_compras = RepositorioCompras()
+    repositorio_despesas = RepositorioDespesas()
+    repositorio_resumo = RepositorioResumo()
 
+    # Entregamos os repositórios aos serviços.
+    cartoes = ServicoCartoes(repositorio_cartoes)
+    compras = ServicoCompras(
+        repositorio_compras,
+        repositorio_cartoes
+    )
+
+    despesas = ServicoDespesas(repositorio_despesas)
     resumo = ServicoResumo(
+        repositorio_resumo=repositorio_resumo,
         servico_despesas=despesas
     )
 

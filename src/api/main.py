@@ -2,9 +2,7 @@
 API DE FINANÇAS PESSOAIS
 
 Este arquivo é a porta de entrada da nossa API.
-
-Ele recebe as requisições HTTP, encaminha as informações
-para os serviços e devolve as respostas ao usuário.
+Ele recebe as requisições HTTP, encaminha as informações para os serviços e devolve as respostas ao usuário.
 
 Bloco 1: Cartões
 Bloco 2: Compras parceladas
@@ -20,6 +18,10 @@ from src.aplicacao.servico_cartoes import ServicoCartoes
 from src.aplicacao.servico_compras import ServicoCompras
 from src.aplicacao.servico_despesas import ServicoDespesas
 from src.aplicacao.servico_resumo import ServicoResumo
+from src.persistencia.repositorio_cartoes import RepositorioCartoes
+from src.persistencia.repositorio_compras import RepositorioCompras
+from src.persistencia.repositorio_despesas import RepositorioDespesas
+from src.persistencia.repositorio_resumo import RepositorioResumo
 
 # ============================================================
 # 1. CONFIGURAÇÃO DA API
@@ -40,19 +42,33 @@ criar_tabelas()
 # ============================================================
 # 2. INICIALIZAÇÃO DOS SERVIÇOS
 # ============================================================
+# CONFIGURACAO DOS REPOSITORIOS E SERVICOS
+# ============================================================
 
-# Os serviços coordenam as regras de negócio.
-servico_cartoes = ServicoCartoes()
-servico_compras = ServicoCompras()
-servico_despesas = ServicoDespesas()
+# Criamos os repositorios concretos que utilizam SQLite.
+repositorio_cartoes = RepositorioCartoes()
+repositorio_compras = RepositorioCompras()
+repositorio_despesas = RepositorioDespesas()
+repositorio_resumo = RepositorioResumo()
+
+# Entregamos as dependencias aos servicos.
+servico_cartoes = ServicoCartoes(repositorio_cartoes)
+
+servico_compras = ServicoCompras(
+    repositorio_compras,
+    repositorio_cartoes
+)
+
+servico_despesas = ServicoDespesas(repositorio_despesas)
+
 servico_resumo = ServicoResumo(
-    servico_despesas=servico_despesas
+    repositorio_resumo,
+    servico_despesas
 )
 
 # ============================================================
 # 3. MODELOS PYDANTIC
 # ============================================================
-
 # Os modelos definem os dados recebidos pelo Swagger.
 
 # ---------------------------

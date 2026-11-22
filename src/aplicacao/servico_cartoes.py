@@ -1,13 +1,9 @@
 from src.dominio.cartao import Cartao
-from src.persistencia.repositorio_cartoes import RepositorioCartoes
+from src.dominio.contratos_repositorios import GestaoCartoes
 
 class ServicoCartoes:
-    def __init__(self, repositorio=None):
-        self.repositorio = (
-            repositorio
-            if repositorio is not None
-            else RepositorioCartoes()
-        )
+    def __init__(self, repositorio: GestaoCartoes):
+        self.repositorio = repositorio
 
     # Cadastra um cartão novo.
     def cadastrar_cartao(

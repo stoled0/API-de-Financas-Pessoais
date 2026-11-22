@@ -9,27 +9,16 @@ Não altera compras, cartões ou despesas.
 """
 
 from decimal import Decimal
-from src.persistencia.repositorio_resumo import RepositorioResumo
-from src.aplicacao.servico_despesas import ServicoDespesas
+from src.dominio.contratos_repositorios import ConsultaResumoCartoes, ConsultaCobrancas
 
 class ServicoResumo:
     def __init__(
         self,
-        repositorio_resumo=None,
-        servico_despesas=None
+        repositorio_resumo: ConsultaResumoCartoes,
+        servico_despesas: ConsultaCobrancas
     ):
-        # Permite substituir as dependências nos testes.
-        self.repositorio_resumo = (
-            repositorio_resumo
-            if repositorio_resumo is not None
-            else RepositorioResumo()
-        )
-
-        self.servico_despesas = (
-            servico_despesas
-            if servico_despesas is not None
-            else ServicoDespesas()
-        )
+        self.repositorio_resumo = repositorio_resumo
+        self.servico_despesas = servico_despesas
 
     def consultar_resumo(self, ano: int, mes: int):
         # Valida o período solicitado.

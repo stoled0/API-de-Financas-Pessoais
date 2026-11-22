@@ -20,6 +20,7 @@ from src.dominio.despesa_recorrente import DespesaRecorrente
 from src.aplicacao.servico_despesas import ServicoDespesas
 from src.persistencia import BD
 from src.api import main
+from src.persistencia.repositorio_despesas import RepositorioDespesas
 
 # ============================================================
 # 1. BANCO TEMPORÁRIO PARA OS TESTES
@@ -37,7 +38,7 @@ def banco_temporario(tmp_path, monkeypatch):
     BD.criar_tabelas()
 
     # Cria um serviço que utiliza esse banco.
-    servico = ServicoDespesas()
+    servico = ServicoDespesas(RepositorioDespesas())
 
     # Faz as rotas da API usarem o serviço de teste.
     monkeypatch.setattr(
@@ -172,7 +173,7 @@ def test_respeitar_data_de_termino():
 # 4. TESTES DO BANCO DE DADOS
 # ============================================================
 def test_salvar_e_listar_despesa(banco_temporario):
-    servico = ServicoDespesas()
+    servico = ServicoDespesas(RepositorioDespesas())
     cadastro = servico.cadastrar_despesa(
         descricao="Academia",
         valor_mensal=Decimal("99.90"),
@@ -187,7 +188,7 @@ def test_salvar_e_listar_despesa(banco_temporario):
     assert Decimal(despesas[0]["valor_mensal"]) == Decimal("99.90")
 
 def test_cobrancas_nao_duplicam_no_banco(banco_temporario):
-    servico = ServicoDespesas()
+    servico = ServicoDespesas(RepositorioDespesas())
     servico.cadastrar_despesa(
         descricao="Internet",
         valor_mensal=Decimal("120.00"),
