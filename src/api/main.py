@@ -18,10 +18,8 @@ from src.aplicacao.servico_cartoes import ServicoCartoes
 from src.aplicacao.servico_compras import ServicoCompras
 from src.aplicacao.servico_despesas import ServicoDespesas
 from src.aplicacao.servico_resumo import ServicoResumo
-from src.persistencia.repositorio_cartoes import RepositorioCartoes
-from src.persistencia.repositorio_compras import RepositorioCompras
-from src.persistencia.repositorio_despesas import RepositorioDespesas
-from src.persistencia.repositorio_resumo import RepositorioResumo
+from src.aplicacao.fabrica_servicos import FabricaSQLite
+from src.api.adaptador_cadastro_compra import AdaptadorCadastroCompra
 
 # ============================================================
 # 1. CONFIGURAÇÃO DA API
@@ -42,29 +40,16 @@ criar_tabelas()
 # ============================================================
 # 2. INICIALIZAÇÃO DOS SERVIÇOS
 # ============================================================
-# CONFIGURACAO DOS REPOSITORIOS E SERVICOS
-# ============================================================
 
-# Criamos os repositorios concretos que utilizam SQLite.
-repositorio_cartoes = RepositorioCartoes()
-repositorio_compras = RepositorioCompras()
-repositorio_despesas = RepositorioDespesas()
-repositorio_resumo = RepositorioResumo()
+# A fabrica prepara os repositorios e os servicos.
+fabrica = FabricaSQLite()
+servicos = fabrica.criar_servicos()
 
-# Entregamos as dependencias aos servicos.
-servico_cartoes = ServicoCartoes(repositorio_cartoes)
-
-servico_compras = ServicoCompras(
-    repositorio_compras,
-    repositorio_cartoes
-)
-
-servico_despesas = ServicoDespesas(repositorio_despesas)
-
-servico_resumo = ServicoResumo(
-    repositorio_resumo,
-    servico_despesas
-)
+# Mantemos os nomes utilizados pelas rotas da API.
+servico_cartoes = servicos["cartoes"]
+servico_compras = servicos["compras"]
+servico_despesas = servicos["despesas"]
+servico_resumo = servicos["resumo"]
 
 # ============================================================
 # 3. MODELOS PYDANTIC
@@ -242,6 +227,7 @@ def excluir_cartao(nome: str):
 # ============================================================
 
 # CADASTRAR COMPRA PARCELADA
+
 @app.post(
     "/compras",
     status_code=201,
@@ -249,22 +235,18 @@ def excluir_cartao(nome: str):
 )
 def cadastrar_compra(dados: DadosCadastroCompra):
     try:
-        # Converte o valor recebido para Decimal.
-        valor = Decimal(dados.valor_total)
-
-        return servico_compras.cadastrar_compra(
-            nome_cartao=dados.nome_cartao,
-            descricao=dados.descricao,
-            valor_total=valor,
-            data_compra=dados.data_compra,
-            quantidade_parcelas=dados.quantidade_parcelas,
-            identificacao_fatura=dados.identificacao_fatura
+        adaptador = AdaptadorCadastroCompra(
+            servico_compras
         )
+
+        return adaptador.cadastrar(dados)
+
     except InvalidOperation as erro:
         raise HTTPException(
             status_code=400,
             detail="O valor total deve ser um número válido."
         ) from erro
+
     except (ValueError, LookupError) as erro:
         tratar_erro(erro)
 

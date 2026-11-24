@@ -7,6 +7,10 @@ from decimal import Decimal
 
 # Representa uma compra realizada no cartão de crédito.
 class Compra:
+
+    # Valor mínimo permitido para cada parcela.
+    VALOR_MINIMO_PARCELA = Decimal("0.01")
+
     def __init__(
         self,
         cartao_id: int,
@@ -59,6 +63,16 @@ class Compra:
                 "A identificação na fatura deve ser um texto."
             )
 
+        # REGRA 8: Cada parcela deve possuir valor mínimo de R$ 0,01.
+        valor_minimo_total = (
+            self.VALOR_MINIMO_PARCELA * quantidade_parcelas
+        )
+
+        if valor_total < valor_minimo_total:
+            raise ValueError(
+                "Cada parcela deve possuir valor mínimo de R$ 0,01."
+            )
+
         # Guarda os dados da compra após a validação.
         self.cartao_id = cartao_id
         self.descricao = descricao.strip()
@@ -66,7 +80,6 @@ class Compra:
         self.data_compra = data_compra
         self.quantidade_parcelas = quantidade_parcelas
         self.identificacao_fatura = identificacao_fatura.strip()
-
 
     # Calcula o valor de cada parcela da compra.
     # Exemplo: Compra de R$ 100,00 dividida em 3 vezes.
@@ -97,7 +110,8 @@ class Compra:
             # Todas começam com o valor básico.
             valor_parcela = valor_base
 
-            # Distribui um centavo adicional nas primeiras parcelas, enquanto houver sobra.
+            # Distribui um centavo adicional nas primeiras parcelas,
+            # enquanto houver sobra.
             if numero < centavos_restantes:
                 valor_parcela += 1
 
