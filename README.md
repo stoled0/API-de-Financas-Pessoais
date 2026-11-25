@@ -42,6 +42,10 @@ Permitir a consulta dos valores das faturas de cartão e das despesas recorrente
 - Para despesas recorrentes, os dias de vencimento vão de 1 a 31 e são tratados como números, sem ajustes por calendário, dias úteis ou feriados.
 - As despesas recorrentes geram uma cobrança por mês dentro do período de vigência, sem registrar cópias mensais no banco.
 - Os casos especiais de fechamento e vencimento dos cartões nos dias 29, 30 e 31 não serão tratados na versão inicial.
+- Os dias de fechamento e vencimento dos cartões devem estar entre 1 e 28.
+- Não será permitido cadastrar cartões com nomes duplicados.
+- Cartões com compras vinculadas poderão ter apenas seus nomes alterados e não poderão ser excluídos.
+- Cada parcela de uma compra deverá possuir valor mínimo de R$ 0,01.
 
 ## 4. Funcionalidades fora do escopo
 
@@ -84,31 +88,120 @@ docs/
 
 Essa organização busca facilitar a compreensão, a manutenção e os testes do sistema.
 
-## 7. Situação atual do desenvolvimento
+7. Situação atual do desenvolvimento
 
-As cinco funcionalidades do escopo estão implementadas: cartões, compras, parcelamento, despesas recorrentes e resumo mensal. Os quatro blocos de testes automatizados foram executados em conjunto, com 80 testes aprovados na revisão.
+As cinco funcionalidades previstas no escopo estão implementadas: cadastro de cartões, registro de compras, parcelamento e organização de faturas, despesas recorrentes e resumo financeiro mensal.
 
-## 8. Como executar a API e os testes
+O sistema utiliza três princípios SOLID (SRP, DIP e ISP) e quatro padrões de projeto GoF (Facade, Factory Method, Adapter e Template Method), além do padrão Repository para organização da persistência. A aplicação também conta com evidências de Desenvolvimento Orientado a Testes (TDD).
 
-Na pasta principal do projeto, com Python e as dependências instaladas, inicie a API:
+Resultados dos testes automatizados:
+Total de testes: 86.
+Testes aprovados: 86.
+Falhas e erros: 0.
+Cobertura geral do código: 95%.
+Cobertura da camada de domínio: 93%.
+
+As evidências de execução dos testes e os relatórios de cobertura estão disponíveis na pasta docs/testes/.
+
+## 8. Como executar o projeto
+
+### 8.1. Pré-requisitos
+
+Para executar o projeto, é necessário possuir:
+
+- Python instalado;
+- Git instalado, caso o projeto seja obtido por meio da clonagem do repositório;
+- Terminal ou ambiente de desenvolvimento, como o Visual Studio Code.
+
+Não é necessário instalar um servidor de banco de dados, pois o projeto utiliza SQLite.
+
+### 8.2. Instalação das dependências
+
+Abra o terminal na pasta principal do projeto e execute:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Esse comando instalará as bibliotecas necessárias para a execução da API e dos testes automatizados.
+
+### 8.3. Inicialização da API
+
+Na pasta principal do projeto, execute:
 
 ```powershell
 python -m uvicorn src.api.main:app --reload
 ```
 
-Acesse a interface Swagger em `http://127.0.0.1:8000/docs`.
+Após a inicialização, a API estará disponível no endereço:
 
-Para executar os testes automatizados:
+http://127.0.0.1:8000
+
+### 8.4. Acesso à documentação interativa
+
+Para acessar a documentação interativa do Swagger UI, abra o seguinte endereço no navegador:
+
+http://127.0.0.1:8000/docs
+
+Por meio dessa interface, será possível consultar as rotas disponíveis, enviar requisições e testar as funcionalidades implementadas:
+
+- Cadastro e gerenciamento de cartões de crédito;
+- Registro e consulta de compras;
+- Geração de parcelas e consulta de faturas;
+- Cadastro e consulta de despesas recorrentes;
+- Consulta do resumo financeiro mensal.
+
+Para encerrar a execução da API, pressione `Ctrl + C` no terminal.
+
+### 8.5. Execução dos testes automatizados
+
+Para executar todos os testes automatizados do projeto, utilize:
 
 ```powershell
-python -m pytest tests/test_bloco1_cartoes.py tests/test_bloco2_compras.py tests/test_bloco3_despesas.py tests/test_bloco4_resumo.py -v
+python -m pytest -v
 ```
 
-Para consultar a cobertura dos módulos de domínio:
+Caso deseje visualizar apenas o resultado resumido dos testes, execute:
 
 ```powershell
-python -m pytest tests/test_bloco1_cartoes.py tests/test_bloco2_compras.py tests/test_bloco3_despesas.py tests/test_bloco4_resumo.py --cov=src.dominio --cov-report=term-missing
+python -m pytest -q
 ```
+
+Os testes contemplam as regras de negócio, a integração entre os componentes, as requisições HTTP, os contratos, a injeção de dependências, os padrões de projeto e a regra desenvolvida por meio do TDD.
+
+### 8.6. Verificação da cobertura dos testes
+
+Para verificar a cobertura geral do código-fonte, execute:
+
+```powershell
+python -m pytest --cov=src --cov-report=term-missing -q
+```
+
+Para verificar especificamente a cobertura da camada de domínio, execute:
+
+```powershell
+python -m pytest --cov=src.dominio --cov-report=term-missing -q
+```
+
+Para gerar um relatório visual de cobertura em formato HTML, execute:
+
+```powershell
+python -m pytest --cov=src --cov-report=html:docs/testes/cobertura -q
+```
+
+Após a execução, o relatório poderá ser consultado abrindo o arquivo:
+
+`docs/testes/cobertura/index.html`
+
+### 8.7. Evidências dos testes
+
+Os registros de execução dos testes automatizados, os relatórios de cobertura e as evidências da aplicação do Desenvolvimento Orientado a Testes (TDD) estão disponíveis na pasta:
+
+`docs/testes/`
+
+As evidências das etapas RED, GREEN e REFACTOR estão disponíveis especificamente na pasta:
+
+`docs/testes/tdd/`
 
 ## 9. Organização do desenvolvimento
 
