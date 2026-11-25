@@ -99,7 +99,7 @@ Total de testes: 86.
 Testes aprovados: 86.
 Falhas e erros: 0.
 Cobertura geral do código: 95%.
-Cobertura da camada de domínio: 93%.
+Cobertura da camada de domínio: 94%.
 
 As evidências de execução dos testes e os relatórios de cobertura estão disponíveis na pasta docs/testes/.
 
@@ -203,6 +203,66 @@ As evidências das etapas RED, GREEN e REFACTOR estão disponíveis especificame
 
 `docs/testes/tdd/`
 
+### 8.8. Análise da qualidade do código
+
+Para executar a análise estática do código-fonte e dos testes:
+
+```powershell
+python -m ruff check src tests
+```
+
+Para verificar a padronização da formatação:
+
+```powershell
+python -m ruff format --check src tests
+```
+
+Para verificar a complexidade ciclomática:
+
+```powershell
+python -m radon cc src -a -s
+```
+
+Para verificar o índice de manutenibilidade:
+
+```powershell
+python -m radon mi src -s
+```
+
+Para consultar as métricas de tamanho do código:
+
+```powershell
+python -m radon raw src -s
+```
+
+Para identificar possíveis duplicações de código:
+
+```powershell
+python -m pylint src --disable=all --enable=duplicate-code --reports=n --score=n
+```
+
+Para verificar indicadores relacionados ao tamanho e à estrutura dos componentes:
+
+```powershell
+python -m pylint src --disable=all --enable=too-many-lines,too-many-statements,too-many-public-methods,too-many-instance-attributes --reports=n --score=n
+```
+
+As evidências das análises anteriores e posteriores às refatorações estão disponíveis em `docs/qualidade/`.
+
+### 8.9. Verificação da compilação
+
+Para verificar a compilação dos arquivos Python:
+
+```powershell
+python -m compileall -q src tests
+```
+
+Para verificar se a aplicação FastAPI pode ser importada corretamente:
+
+```powershell
+python -c "from src.api.main import app; print(app.title)"
+```
+
 ## 9. Organização do desenvolvimento
 
 O projeto será desenvolvido de maneira incremental, dividido em três Sprints.
@@ -214,3 +274,31 @@ O projeto será desenvolvido de maneira incremental, dividido em três Sprints.
 As decisões arquiteturais e os requisitos estão documentados no Relatório Técnico do projeto.
 
 Os arquivos da pasta `docs/` serão utilizados como documentação complementar de apoio ao desenvolvimento.
+
+## 10. Integração Contínua (CI)
+
+O projeto possui um pipeline de integração contínua configurado por meio do GitHub Actions.
+
+O arquivo de configuração está localizado em:
+
+`.github/workflows/ci.yml`
+
+O pipeline está configurado para executar automaticamente a cada push ou pull request, contemplando:
+
+- Preparação do ambiente Python;
+- Instalação das dependências;
+- Verificação da compilação do código;
+- Verificação da importação da aplicação FastAPI;
+- Análise estática com Ruff;
+- Verificação da formatação;
+- Execução dos testes automatizados;
+- Geração de relatórios de cobertura;
+- Verificação da cobertura mínima de 70% da camada de domínio;
+- Geração de métricas de qualidade com Radon;
+- Disponibilização dos relatórios como artefatos do GitHub Actions.
+
+Os resultados das execuções podem ser consultados na aba Actions do repositório.
+
+A aplicação não possui implantação automatizada em um servidor de produção, uma vez que foi desenvolvida para execução local.
+
+As evidências do pipeline estão organizadas na pasta `docs/ci/`.

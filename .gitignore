@@ -49,3 +49,8 @@ dados/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Relatorios temporarios do pipeline de CI
+/relatorio-cobertura/
+/relatorio-qualidade/
+/cobertura.xml
