@@ -1,12 +1,14 @@
 from datetime import date
 from decimal import Decimal
-from src.dominio.despesa_recorrente import DespesaRecorrente
+
 from src.dominio.contratos_repositorios import RegistroDespesas
+from src.dominio.despesa_recorrente import DespesaRecorrente
+
 
 class ServicoDespesas:
     def __init__(self, repositorio: RegistroDespesas):
         self.repositorio = repositorio
-        
+
     # Coordena o cadastro da despesa.
     def cadastrar_despesa(
         self,
@@ -14,7 +16,7 @@ class ServicoDespesas:
         valor_mensal: Decimal,
         dia_vencimento: int,
         data_inicio: date,
-        data_fim: date | None = None
+        data_fim: date | None = None,
     ):
 
         # O domínio valida os dados.
@@ -23,7 +25,7 @@ class ServicoDespesas:
             valor_mensal=valor_mensal,
             dia_vencimento=dia_vencimento,
             data_inicio=data_inicio,
-            data_fim=data_fim
+            data_fim=data_fim,
         )
 
         # O Repository salva a despesa.
@@ -36,10 +38,8 @@ class ServicoDespesas:
             "dia_vencimento": despesa.dia_vencimento,
             "data_inicio": despesa.data_inicio.isoformat(),
             "data_fim": (
-                despesa.data_fim.isoformat()
-                if despesa.data_fim is not None
-                else None
-            )
+                despesa.data_fim.isoformat() if despesa.data_fim is not None else None
+            ),
         }
 
     # Consulta as despesas cadastradas.
@@ -60,41 +60,32 @@ class ServicoDespesas:
             # Reconstrói o objeto de domínio.
             despesa = DespesaRecorrente(
                 descricao=registro["descricao"],
-                valor_mensal=Decimal(
-                    registro["valor_mensal"]
-                ),
+                valor_mensal=Decimal(registro["valor_mensal"]),
                 dia_vencimento=registro["dia_vencimento"],
-                data_inicio=date.fromisoformat(
-                    registro["data_inicio"]
-                ),
+                data_inicio=date.fromisoformat(registro["data_inicio"]),
                 data_fim=(
                     date.fromisoformat(registro["data_fim"])
                     if registro["data_fim"] is not None
                     else None
-                )
+                ),
             )
 
             # Solicita ao domínio a geração da cobrança.
-            resultado = despesa.gerar_cobrancas(
-                ano, mes, ano, mes
-            )
+            resultado = despesa.gerar_cobrancas(ano, mes, ano, mes)
 
             for cobranca in resultado:
-                cobrancas.append({
-                    "id_despesa": registro["id"],
-                    "descricao": cobranca["descricao"],
-                    "valor": str(cobranca["valor"]),
-                    "ano": cobranca["ano"],
-                    "mes": cobranca["mes"],
-                    "dia_vencimento": cobranca["dia_vencimento"]
-                })
+                cobrancas.append(
+                    {
+                        "id_despesa": registro["id"],
+                        "descricao": cobranca["descricao"],
+                        "valor": str(cobranca["valor"]),
+                        "ano": cobranca["ano"],
+                        "mes": cobranca["mes"],
+                        "dia_vencimento": cobranca["dia_vencimento"],
+                    }
+                )
 
         # Ordena as cobranças pelo dia.
-        cobrancas.sort(
-            key=lambda item: (
-                item["dia_vencimento"],
-                item["id_despesa"]
-            )
-        )
+        cobrancas.sort(key=lambda item: (item["dia_vencimento"], item["id_despesa"]))
 
         return cobrancas

@@ -1,11 +1,12 @@
-import sqlite3 #Importa a biblioteca do Python que permite trabalhar com bancos SQLite.
+import sqlite3  # Importa a biblioteca do Python que permite trabalhar com bancos SQLite.
 from pathlib import Path
 
 # Localiza a pasta principal do projeto.
 PASTA_PROJETO = Path(__file__).resolve().parents[2]
 
 # Define onde o arquivo do banco de dados será armazenado.
-CAMINHO_BANCO = PASTA_PROJETO / "financas.db" 
+CAMINHO_BANCO = PASTA_PROJETO / "financas.db"
+
 
 def conectar_banco():
     # Abre uma conexão com o SQLite.
@@ -16,6 +17,7 @@ def conectar_banco():
     conexao.execute("PRAGMA foreign_keys = ON")
     conexao.row_factory = sqlite3.Row
     return conexao
+
 
 def criar_tabelas():
     conexao = conectar_banco()

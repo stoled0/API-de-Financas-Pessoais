@@ -1,5 +1,7 @@
 import sqlite3
+
 from src.persistencia.BD import conectar_banco
+
 
 class RepositorioCartoes:
     # Salva um cartão e devolve seu ID interno.
@@ -13,11 +15,7 @@ class RepositorioCartoes:
                 )
                 VALUES (?, ?, ?)
                 """,
-                (
-                    cartao.nome,
-                    cartao.dia_fechamento,
-                    cartao.dia_vencimento
-                )
+                (cartao.nome, cartao.dia_fechamento, cartao.dia_vencimento),
             )
             conexao.commit()
             return cursor.lastrowid
@@ -58,7 +56,7 @@ class RepositorioCartoes:
                 FROM cartoes
                 WHERE id = ?
                 """,
-                (cartao_id,)
+                (cartao_id,),
             ).fetchone()
             return dict(registro) if registro else None
         finally:
@@ -74,7 +72,7 @@ class RepositorioCartoes:
                 FROM cartoes
                 WHERE LOWER(TRIM(nome)) = LOWER(TRIM(?))
                 """,
-                (nome,)
+                (nome,),
             ).fetchone()
             return dict(registro) if registro else None
         finally:
@@ -90,7 +88,7 @@ class RepositorioCartoes:
                 FROM compras
                 WHERE cartao_id = ?
                 """,
-                (cartao_id,)
+                (cartao_id,),
             ).fetchone()
             return registro["quantidade"] > 0
         finally:
@@ -126,8 +124,8 @@ class RepositorioCartoes:
                     cartao.dia_vencimento,
                     cartao_id,
                     cartao.dia_fechamento,
-                    cartao.dia_vencimento
-                )
+                    cartao.dia_vencimento,
+                ),
             )
             conexao.commit()
             return cursor.rowcount > 0
@@ -162,7 +160,7 @@ class RepositorioCartoes:
                       WHERE cartao_id = cartoes.id
                   )
                 """,
-                (cartao_id,)
+                (cartao_id,),
             )
             conexao.commit()
             return cursor.rowcount > 0

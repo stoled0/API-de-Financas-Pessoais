@@ -9,7 +9,9 @@ Não altera nenhuma informação do banco.
 """
 
 from decimal import Decimal
+
 from src.persistencia.BD import conectar_banco
+
 
 class RepositorioResumo:
     def consultar_cartoes(self, ano: int, mes: int):
@@ -35,22 +37,21 @@ class RepositorioResumo:
                 GROUP BY cartoes.id, cartoes.nome
                 ORDER BY cartoes.nome
                 """,
-                (mes_referencia,)
+                (mes_referencia,),
             ).fetchall()
 
             resultado = []
 
             for registro in registros:
-                total = (
-                    Decimal(registro["total_centavos"])
-                    / Decimal("100")
-                )
+                total = Decimal(registro["total_centavos"]) / Decimal("100")
 
-                resultado.append({
-                    "cartao_id": registro["cartao_id"],
-                    "nome_cartao": registro["nome_cartao"],
-                    "total": str(total)
-                })
+                resultado.append(
+                    {
+                        "cartao_id": registro["cartao_id"],
+                        "nome_cartao": registro["nome_cartao"],
+                        "total": str(total),
+                    }
+                )
 
             return resultado
         finally:

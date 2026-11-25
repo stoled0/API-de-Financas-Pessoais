@@ -1,5 +1,7 @@
 from decimal import Decimal
+
 from src.persistencia.BD import conectar_banco
+
 
 class RepositorioDespesas:
     # Salva a configuração de uma despesa recorrente.
@@ -27,8 +29,8 @@ class RepositorioDespesas:
                         despesa.data_fim.isoformat()
                         if despesa.data_fim is not None
                         else None
-                    )
-                )
+                    ),
+                ),
             )
 
             conexao.commit()
@@ -66,9 +68,7 @@ class RepositorioDespesas:
 
                 # Converte centavos em reais.
                 despesa["valor_mensal"] = str(
-                    Decimal(
-                        despesa.pop("valor_mensal_centavos")
-                    ) / 100
+                    Decimal(despesa.pop("valor_mensal_centavos")) / 100
                 )
 
                 despesas.append(despesa)

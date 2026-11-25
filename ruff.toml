@@ -1,0 +1,10 @@
+# Quantidade máxima de caracteres por linha.
+line-length = 88
+
+[lint]
+
+# Regras utilizadas na análise estática.
+select = ["E", "F", "W", "I"]
+
+# Desconsidera linhas que ultrapassam o limite de caracteres.
+ignore = ["E501"]

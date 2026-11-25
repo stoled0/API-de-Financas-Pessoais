@@ -1,5 +1,7 @@
 from decimal import Decimal
+
 from src.persistencia.BD import conectar_banco
+
 
 class RepositorioCompras:
     # Salva uma compra e todas as suas parcelas.
@@ -7,9 +9,7 @@ class RepositorioCompras:
         conexao = conectar_banco()
         try:
             # O banco guarda valores monetários em centavos.
-            valor_total_centavos = int(
-                compra.valor_total * 100
-            )
+            valor_total_centavos = int(compra.valor_total * 100)
             # Primeiro, salva a compra.
             cursor = conexao.execute(
                 """
@@ -29,17 +29,15 @@ class RepositorioCompras:
                     compra.identificacao_fatura,
                     valor_total_centavos,
                     compra.data_compra.isoformat(),
-                    compra.quantidade_parcelas
-                )
+                    compra.quantidade_parcelas,
+                ),
             )
             # Recupera o ID criado pelo SQLite.
             compra_id = cursor.lastrowid
 
             # Salva cada parcela vinculada à compra.
             for parcela in parcelas:
-                valor_centavos = int(
-                    parcela["valor"] * 100
-                )
+                valor_centavos = int(parcela["valor"] * 100)
                 conexao.execute(
                     """
                     INSERT INTO parcelas (
@@ -54,8 +52,8 @@ class RepositorioCompras:
                         compra_id,
                         parcela["numero"],
                         valor_centavos,
-                        parcela["vencimento"].isoformat()
-                    )
+                        parcela["vencimento"].isoformat(),
+                    ),
                 )
 
             # Confirma a compra e todas as parcelas juntas.
@@ -92,7 +90,6 @@ class RepositorioCompras:
             resultado = []
 
             for registro in registros:
-
                 compra = dict(registro)
 
                 # Recupera as parcelas desta compra.
@@ -106,25 +103,19 @@ class RepositorioCompras:
                     WHERE compra_id = ?
                     ORDER BY numero
                     """,
-                    (compra["id"],)
+                    (compra["id"],),
                 ).fetchall()
 
                 # Converte centavos para valores em reais.
                 compra["valor_total"] = str(
-                    Decimal(
-                        compra.pop("valor_total_centavos")
-                    ) / 100
+                    Decimal(compra.pop("valor_total_centavos")) / 100
                 )
 
                 compra["parcelas"] = [
                     {
                         "numero": parcela["numero"],
-                        "valor": str(
-                            Decimal(
-                                parcela["valor_centavos"]
-                            ) / 100
-                        ),
-                        "vencimento": parcela["vencimento"]
+                        "valor": str(Decimal(parcela["valor_centavos"]) / 100),
+                        "vencimento": parcela["vencimento"],
                     }
                     for parcela in parcelas
                 ]

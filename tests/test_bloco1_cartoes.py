@@ -6,10 +6,13 @@ Os testes NÃO utilizam o financas.db principal.
 """
 
 import sqlite3
+
 import pytest
 from fastapi.testclient import TestClient
+
 from src.dominio.cartao import Cartao
 from src.persistencia import BD
+
 
 @pytest.fixture
 def ambiente(monkeypatch, tmp_path):
@@ -22,11 +25,7 @@ def ambiente(monkeypatch, tmp_path):
 
     banco_teste = tmp_path / "cartoes_teste.db"
 
-    monkeypatch.setattr(
-        BD,
-        "CAMINHO_BANCO",
-        banco_teste
-    )
+    monkeypatch.setattr(BD, "CAMINHO_BANCO", banco_teste)
 
     # Cria as tabelas e o índice de nomes únicos.
     BD.criar_tabelas()
@@ -38,17 +37,12 @@ def ambiente(monkeypatch, tmp_path):
         yield cliente
 
 
-def cadastrar(cliente, nome="Cartao Teste",
-              fechamento=5, vencimento=12):
+def cadastrar(cliente, nome="Cartao Teste", fechamento=5, vencimento=12):
     """Facilita o cadastro durante os testes."""
 
     return cliente.post(
         "/cartoes",
-        json={
-            "nome": nome,
-            "dia_fechamento": fechamento,
-            "dia_vencimento": vencimento
-        }
+        json={"nome": nome, "dia_fechamento": fechamento, "dia_vencimento": vencimento},
     )
 
 
@@ -69,7 +63,7 @@ def vincular_compra(nome_cartao):
             FROM cartoes
             WHERE nome = ?
             """,
-            (nome_cartao,)
+            (nome_cartao,),
         ).fetchone()
 
         conexao.execute(
@@ -84,14 +78,7 @@ def vincular_compra(nome_cartao):
             )
             VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (
-                cartao["id"],
-                "Compra fictícia",
-                "TESTE",
-                10000,
-                "2026-11-21",
-                1
-            )
+            (cartao["id"], "Compra fictícia", "TESTE", 10000, "2026-11-21", 1),
         )
 
         conexao.commit()
@@ -113,11 +100,9 @@ def vincular_compra(nome_cartao):
         ("Teste", "cinco", 12),
         ("Teste", 5, "doze"),
         (None, 5, 12),
-    ]
+    ],
 )
-def test_dominio_rejeita_dados_invalidos(
-    nome, fechamento, vencimento
-):
+def test_dominio_rejeita_dados_invalidos(nome, fechamento, vencimento):
     with pytest.raises(ValueError):
         Cartao(nome, fechamento, vencimento)
 
@@ -160,11 +145,7 @@ def test_edicao_sem_compras(ambiente):
 
     resposta = ambiente.patch(
         "/cartoes/Cartao Teste",
-        json={
-            "nome": "Cartao Atualizado",
-            "dia_fechamento": 8,
-            "dia_vencimento": 15
-        }
+        json={"nome": "Cartao Atualizado", "dia_fechamento": 8, "dia_vencimento": 15},
     )
 
     assert resposta.status_code == 200
@@ -178,10 +159,7 @@ def test_edicao_com_nome_duplicado(ambiente):
     cadastrar(ambiente, "Nubank")
     cadastrar(ambiente, "Inter")
 
-    resposta = ambiente.patch(
-        "/cartoes/Inter",
-        json={"nome": " NUBANK "}
-    )
+    resposta = ambiente.patch("/cartoes/Inter", json={"nome": " NUBANK "})
 
     assert resposta.status_code == 400
 
@@ -194,10 +172,7 @@ def test_renomear_cartao_com_compras(ambiente):
     cadastrar(ambiente, "Nubank")
     vincular_compra("Nubank")
 
-    resposta = ambiente.patch(
-        "/cartoes/Nubank",
-        json={"nome": "Nubank - Sarah"}
-    )
+    resposta = ambiente.patch("/cartoes/Nubank", json={"nome": "Nubank - Sarah"})
 
     assert resposta.status_code == 200
     assert resposta.json()["nome"] == "Nubank - Sarah"
@@ -208,10 +183,7 @@ def test_bloquear_edicao_com_compras(ambiente):
     cadastrar(ambiente, "Nubank")
     vincular_compra("Nubank")
 
-    resposta = ambiente.patch(
-        "/cartoes/Nubank",
-        json={"dia_vencimento": 20}
-    )
+    resposta = ambiente.patch("/cartoes/Nubank", json={"dia_vencimento": 20})
 
     assert resposta.status_code == 400
 
@@ -248,35 +220,22 @@ def test_exclusao_permitida(ambiente):
 
 # TESTE 10: Cartão inexistente.
 def test_cartao_inexistente(ambiente):
-    assert ambiente.get(
-        "/cartoes/Inexistente"
-    ).status_code == 404
+    assert ambiente.get("/cartoes/Inexistente").status_code == 404
 
-    assert ambiente.patch(
-        "/cartoes/Inexistente",
-        json={"nome": "Novo"}
-    ).status_code == 404
+    assert (
+        ambiente.patch("/cartoes/Inexistente", json={"nome": "Novo"}).status_code == 404
+    )
 
-    assert ambiente.delete(
-        "/cartoes/Inexistente"
-    ).status_code == 404
+    assert ambiente.delete("/cartoes/Inexistente").status_code == 404
 
 
 # TESTE 11: Validação de dados recebidos pela API.
 def test_dados_invalidos_na_api(ambiente):
-    resposta = cadastrar(
-        ambiente,
-        nome="Teste",
-        fechamento="texto"
-    )
+    resposta = cadastrar(ambiente, nome="Teste", fechamento="texto")
 
     assert resposta.status_code == 422
 
-    resposta = cadastrar(
-        ambiente,
-        nome="",
-        fechamento=5
-    )
+    resposta = cadastrar(ambiente, nome="", fechamento=5)
 
     assert resposta.status_code == 400
 
@@ -298,7 +257,7 @@ def test_indice_unico_sqlite(ambiente):
                 )
                 VALUES (?, ?, ?)
                 """,
-                (" nubank ", 5, 12)
+                (" nubank ", 5, 12),
             )
 
     finally:
@@ -335,16 +294,9 @@ def test_repositorio_bloqueia_edicao_com_compras(ambiente):
     repositorio = RepositorioCartoes()
     cartao_atual = repositorio.buscar_por_nome("Nubank")
 
-    cartao_alterado = Cartao(
-        nome="Nubank",
-        dia_fechamento=5,
-        dia_vencimento=20
-    )
+    cartao_alterado = Cartao(nome="Nubank", dia_fechamento=5, dia_vencimento=20)
 
-    atualizado = repositorio.atualizar(
-        cartao_atual["id"],
-        cartao_alterado
-    )
+    atualizado = repositorio.atualizar(cartao_atual["id"], cartao_alterado)
 
     assert atualizado is False
 
@@ -363,24 +315,18 @@ def test_sqlite_protege_relacionamento_compras(ambiente):
 
     try:
         cartao = conexao.execute(
-            "SELECT id FROM cartoes WHERE nome = ?",
-            ("Nubank",)
+            "SELECT id FROM cartoes WHERE nome = ?", ("Nubank",)
         ).fetchone()
 
         # Confirma que a proteção de chave estrangeira
         # está ativada nesta conexão.
-        ativado = conexao.execute(
-            "PRAGMA foreign_keys"
-        ).fetchone()[0]
+        ativado = conexao.execute("PRAGMA foreign_keys").fetchone()[0]
 
         assert ativado == 1
 
         # Tenta excluir diretamente pelo SQL.
         with pytest.raises(sqlite3.IntegrityError):
-            conexao.execute(
-                "DELETE FROM cartoes WHERE id = ?",
-                (cartao["id"],)
-            )
+            conexao.execute("DELETE FROM cartoes WHERE id = ?", (cartao["id"],))
 
     finally:
         conexao.rollback()
@@ -393,11 +339,7 @@ def test_edicao_invalida_preserva_dados(ambiente):
     cadastrar(ambiente, "Nubank", 5, 12)
 
     resposta = ambiente.patch(
-        "/cartoes/Nubank",
-        json={
-            "nome": "Novo Nome",
-            "dia_fechamento": 30
-        }
+        "/cartoes/Nubank", json={"nome": "Novo Nome", "dia_fechamento": 30}
     )
 
     assert resposta.status_code == 400

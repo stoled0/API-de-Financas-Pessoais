@@ -1,0 +1,82 @@
+name: CI - API de Financas Pessoais
+
+# Executa automaticamente a cada push ou pull request.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  qualidade-e-testes:
+
+    name: Qualidade e testes automatizados
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # ETAPA 1: Obter os arquivos do repositorio.
+      - name: Baixar codigo-fonte
+        uses: actions/checkout@v4
+
+      # ETAPA 2: Configurar a linguagem Python.
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # ETAPA 3: Instalar as dependencias.
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      # ETAPA 4: Verificar a compilacao do codigo.
+      - name: Build - verificar codigo Python
+        run: python -m compileall -q src tests
+
+      # ETAPA 5: Verificar a importacao da API.
+      - name: Verificar inicializacao da API
+        run: python -c "from src.api.main import app; print(app.title)"
+
+      # ETAPA 6: Executar a analise estatica.
+      - name: Analise estatica com Ruff
+        run: python -m ruff check src tests
+
+      # ETAPA 7: Verificar a formatacao.
+      - name: Verificar formatacao
+        run: python -m ruff format --check src tests
+
+      # ETAPA 8: Executar os testes e medir a cobertura geral.
+      - name: Testes automatizados e cobertura geral
+        run: |
+          python -m pytest --cov=src --cov-report=term-missing --cov-report=html:relatorio-cobertura --cov-report=xml:cobertura.xml -q
+
+      # ETAPA 9: Garantir a cobertura minima do dominio.
+      - name: Verificar cobertura do dominio
+        run: |
+          python -m pytest --cov=src.dominio --cov-report=term-missing --cov-fail-under=70 -q
+
+      # ETAPA 10: Gerar metricas de qualidade.
+      - name: Gerar metricas com Radon
+        run: |
+          mkdir -p relatorio-qualidade
+          python -m radon cc src -a -s > relatorio-qualidade/complexidade.txt
+          python -m radon mi src -s > relatorio-qualidade/manutenibilidade.txt
+          python -m radon raw src -s > relatorio-qualidade/metricas_codigo.txt
+
+      # ETAPA 11: Disponibilizar os relatorios no GitHub.
+      - name: Armazenar relatorios
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: relatorios-qualidade-e-cobertura
+          path: |
+            relatorio-cobertura/
+            relatorio-qualidade/
+            cobertura.xml
+          if-no-files-found: warn

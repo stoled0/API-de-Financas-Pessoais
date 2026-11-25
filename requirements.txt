@@ -4,3 +4,6 @@ pydantic
 pytest
 pytest-cov
 httpx
+ruff
+radon
+pylint
